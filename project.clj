@@ -5,7 +5,7 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/java.jdbc "0.7.11"]
-                 [org.xerial/sqlite-jdbc "3.31.1"]
+                 [org.xerial/sqlite-jdbc "3.34.0"]
                  [strigui "0.0.1-alpha2"]]
   :main ^:skip-aot vocabularytrainer.core/main
   :target-path "target/%s"
