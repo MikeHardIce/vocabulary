@@ -1,27 +1,40 @@
 (ns vocabularytrainer.gui
-  (:require [strigui.core :as gui]))
-
+  (:require [strigui.core :as gui]
+            [vocabularytrainer.store :as store]))
 
 (def current-items (atom []))
 
 (defn clear-screen []
   (doall (map (fn [item] (gui/remove! item) (println "remove")) @current-items)))
 
+(defn- list-vocabularies []
+  (loop [y 100
+        v (store/get-vocables)
+        index 0
+        widget-names []]
+    (if (seq v)
+      (do 
+        (gui/label (str "voc" index) (:term (first v)) {:x 100 :y y :color [:black]})
+        (gui/label (str "lang" index) (:name (first v)) {:x 400 :y y :color [:black]})
+        (recur (+ y 50) (rest v) (inc index) (conj widget-names (str "voc" index) (str "lang" index))))
+      widget-names)))
+
 (defn show-list []
   (clear-screen)
   (gui/update! "title" :value "View")
-  (gui/label "voc1" "blabla" {:x 100 :y 100 :color [:black]})
-  (gui/label "voc2" "blablabla" {:x 200 :y 100 :color [:black]})
-  (reset! current-items ["voc1" "voc2"]))
+  (let [voc (list-vocabularies)]
+    (gui/button "back" "Back" {:x 100 :y 500 :color [:white :black] :min-width 150})
+    (gui/update! "back" [:events :mouse-clicked] (fn [wdg] (show-menu-main)))
+    (reset! current-items (conj voc "back"))))
 
 (defn show-menu-main []
   (clear-screen)
   (gui/update! "title" :value "Vocabulary Trainer")
-  (gui/button "menu-practice" "Practice" {:x 220 :y 115 :color [:back :black] 
+  (gui/button "menu-practice" "Practice" {:x 220 :y 115 :color [:white :black] 
                                                   :min-width 150})
-  (gui/button "menu-add" "Add" {:x 220 :y 165 :color [:back :black] 
+  (gui/button "menu-add" "Add" {:x 220 :y 165 :color [:white :black] 
                                               :min-width 150})
-  (gui/button "menu-view" "View" {:x 220 :y 215 :color [:back :black] 
+  (gui/button "menu-view" "View" {:x 220 :y 215 :color [:white :black] 
                                                 :min-width 150})
   (reset! current-items ["menu-practice" "menu-add" "menu-view"])
   (gui/update! "menu-view" [:events :mouse-clicked] (fn [wdg] (show-list))))
@@ -34,4 +47,3 @@
                                             :align [:center]
                                             :font-size 20})
   (show-menu-main))
-

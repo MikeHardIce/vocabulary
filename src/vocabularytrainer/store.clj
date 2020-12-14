@@ -34,6 +34,13 @@
   (-> (db/query db (str "Select id from languages where name = '" name "'"))
       first
       :id))
+    
+(defn get-languages []
+  (db/query db "Select name from languages"))
+
+(defn get-vocables []
+  (db/query db "Select v.term, l.name from vocables v
+                inner join languages l on v.lang_id = l.id"))
 
 (defn- get-vocable-id [term lang]
   (-> (db/query db (str "Select v.id from vocables v

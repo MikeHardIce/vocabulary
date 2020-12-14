@@ -1,6 +1,5 @@
 (ns vocabularytrainer.core
-  (:require [vocabularytrainer.gui :as gui]
-            [vocabularytrainer.store :as store]))
+  (:require [vocabularytrainer.gui :as gui]))
 
 (defn main
   ""
