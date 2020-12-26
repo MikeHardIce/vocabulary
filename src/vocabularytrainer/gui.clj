@@ -19,12 +19,12 @@
         (recur (+ y 50) (rest v) (inc index) (conj widget-names (str "voc" index) (str "lang" index))))
       widget-names)))
 
-(defn show-list []
+(defn show-list [main-menu-f]
   (clear-screen)
   (gui/update! "title" :value "View")
   (let [voc (list-vocabularies)]
     (gui/button "back" "Back" {:x 100 :y 500 :color [:white :black] :min-width 150})
-    (gui/update! "back" [:events :mouse-clicked] (fn [wdg] (show-menu-main)))
+    (gui/update! "back" [:events :mouse-clicked] (fn [wdg] (main-menu-f)))
     (reset! current-items (conj voc "back"))))
 
 (defn show-menu-main []
@@ -37,7 +37,7 @@
   (gui/button "menu-view" "View" {:x 220 :y 215 :color [:white :black] 
                                                 :min-width 150})
   (reset! current-items ["menu-practice" "menu-add" "menu-view"])
-  (gui/update! "menu-view" [:events :mouse-clicked] (fn [wdg] (show-list))))
+  (gui/update! "menu-view" [:events :mouse-clicked] (fn [wdg] (show-list show-menu-main))))
 
 (defn build-main
   []
