@@ -42,8 +42,7 @@
 (defn build-main
   []
   (gui/window 600 600)
-  (gui/label "title" "Vocabulary Trainer" {:x 300 :y 50 
-                                            :color [:black] 
-                                            :align [:center]
+  (gui/label "title" "Vocabulary Trainer" {:x 200 :y 50 
+                                            :color [:black]
                                             :font-size 20})
   (show-menu-main))
