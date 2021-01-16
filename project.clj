@@ -7,6 +7,7 @@
                  [org.clojure/java.jdbc "0.7.11"]
                  [org.xerial/sqlite-jdbc "3.34.0"]
                  [strigui "0.0.1-alpha4"]]
-  :main ^:skip-aot vocabularytrainer.core/main
+  :main vocabularytrainer.core
+  :aot [vocabularytrainer.core]
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

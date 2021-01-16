@@ -1,7 +1,8 @@
 (ns vocabularytrainer.core
-  (:require [vocabularytrainer.gui :as gui]))
+  (:require [vocabularytrainer.gui :as gui])
+  (:gen-class))
 
-(defn main
+(defn -main
   ""
   [& args]
   (gui/build-main))
