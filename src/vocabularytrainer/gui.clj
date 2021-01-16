@@ -40,7 +40,6 @@
   (clear-screen)
   (gui/update! "title" :value "View")
   (let [voc (list-vocabularies)]
-    (println voc)
     (reset! current-items-on-screen (vec (flatten (conj @current-items-on-screen voc))))
     (create-back-button main-menu-f)))
 
