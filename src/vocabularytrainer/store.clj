@@ -49,13 +49,23 @@
       first
       :id))
 
-(defn get-translation-for [term from-lang to-lang]
-  (let [voc-id (get-vocable-id term from-lang)]
-    (db/query db (str "Select distinct v.term from vocables v
-                      where v.id in (Select t.vocable2_id 
-                      from translations t where t.vocable1_id = " voc-id
-                         " UNION 
-                      Select t.vocable1_id from translations t where t.vocable2_id = " voc-id ")"))))
+(defn get-translations-for 
+  ([from-lang to-lang] 
+   (let [to-id (get-lang-id to-lang)
+         from-id (get-lang-id from-lang)]
+     (db/query db (str "Select v1.term, v2.term from vocables v1
+                      inner join translations t on v1.id = t.vocable1_id
+                      inner join vocables v2 on t.vocable2_id = v2.id
+                      where v1.lang_id = " from-id
+                      " and v2.lang_id = " to-id))))
+  ([from-lang to-lang term] ;; TODO: Add the other way around
+  (let [voc-id (get-vocable-id term from-lang)
+        to-id (get-lang-id to-lang)]
+    (db/query db (str "Select v1.term, v2.term from vocables v1
+                      inner join translations t on v1.id = t.vocable1_id
+                      inner join vocables v2 on t.vocable2_id = v2.id
+                      where v1.id = " voc-id
+                      " and v2.lang_id = " to-id)))))
 
 (defn remove-translation [vocable1 vocable2]
   (db/delete! db :translations ["vocable1_id = ?" (min vocable1 vocable2) "vocable2_id = ?" (max vocable1 vocable2)]))

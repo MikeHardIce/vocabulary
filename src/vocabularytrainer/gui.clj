@@ -1,6 +1,7 @@
 (ns vocabularytrainer.gui
   (:require [strigui.core :as gui]
-            [vocabularytrainer.store :as store]))
+            [vocabularytrainer.store :as store]
+            [vocabularytrainer.practice :as pract]))
 
 (def current-items-on-screen (atom []))
 
@@ -8,7 +9,7 @@
   (doall (map #(gui/remove! %) @current-items-on-screen)))
 
 (defn create-back-button 
-  ([main-menu-f] (create-back-button main-menu-f 100 500))
+  ([main-menu-f] (create-back-button main-menu-f 100 550))
   ([main-menu-f x y]
   (gui/button "back" "Back" {:x x :y y :color [:white :black] :min-width 150})
   (gui/update! "back" [:events :mouse-clicked] (fn [wdg] (main-menu-f)))
