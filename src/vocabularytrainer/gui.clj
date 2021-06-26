@@ -61,7 +61,7 @@
 
 (defn build-main
   []
-  (gui/window 600 600)
+  (gui/window! 600 600 "Vocabulary Trainer")
   (gui/label "title" "Vocabulary Trainer" {:x 200 :y 50 
                                             :color [:black]
                                             :font-size 20})
