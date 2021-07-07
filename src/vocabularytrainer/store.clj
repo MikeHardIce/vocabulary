@@ -1,5 +1,6 @@
 (ns vocabularytrainer.store
-  (:require [clojure.java.jdbc :as db]))
+  (:require [clojure.java.jdbc :as db]
+             [clojure.string :as s]))
 
 (def db
   {:classname   "org.sqlite.JDBC"
@@ -31,7 +32,7 @@
          (println (.getMessage e)))))
 
 (defn- get-lang-id [name]
-  (-> (db/query db (str "Select id from languages where name = '" name "'"))
+  (-> (db/query db (str "Select id from languages where lower(name) = '" (s/lower-case name) "'"))
       first
       :id))
     
@@ -45,7 +46,7 @@
 (defn- get-vocable-id [term lang]
   (-> (db/query db (str "Select v.id from vocables v
                         INNER JOIN languages l ON v.lang_id = l.id 
-                         where l.name = '" lang "' and v.term = '" term "'"))
+                         where lower(l.name) = '" (s/lower-case lang) "' and v.term = '" (s/lower-case term) "'"))
       first
       :id))
 

@@ -1,5 +1,6 @@
 (ns vocabularytrainer.gui
   (:require [strigui.core :as gui]
+            [vocabularytrainer.ui.stacks :as st]
             [vocabularytrainer.store :as store]
             [vocabularytrainer.practice :as pract]))
 
@@ -12,12 +13,16 @@
   ([main-menu-f] (create-back-button main-menu-f 100 550))
   ([main-menu-f x y]
   (gui/button "back" "Back" {:x x :y y :color [:white :black] :min-width 150})
-  (gui/update! "back" [:events :mouse-clicked] (fn [wdg] (main-menu-f)))
+  (gui/update! "back" [:events :mouse-clicked] (fn [_] (main-menu-f)))
   (swap! current-items-on-screen conj "back")))
 
 (defn view-practice [main-menu-f]
   (clear-screen)
   (gui/update! "title" :value "Practice")
+  (let [translations (store/get-translations-for "german" "english")
+        practice (pract/load-exercises translations 5)]
+    (gui/create (st/->Stack "progress" (pract/show-all-stages practice) {:x 100 :y 100}))
+    (swap! current-items-on-screen conj "progress"))
   (create-back-button main-menu-f))
 
 (defn view-add-vocabularies [main-menu-f]
