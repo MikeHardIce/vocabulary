@@ -18,6 +18,12 @@
     (for [key (range 0 max-stage)]
       (count (grouped key)))))
 
+(defn get-random-practice-item
+  [practice]
+  (let [not-completed-items (filter #(< (:stage %) (:max-stage practice)) (:exercises practice))]
+    (when (seq not-completed-items)
+      (rand-nth not-completed-items))))
+
 (defn get-question
   [item]
   (-> item
