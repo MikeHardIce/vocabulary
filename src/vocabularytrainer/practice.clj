@@ -44,6 +44,14 @@
                                          (and (= q questioned) (= answ answered)))) (:exercises practice))]
     (first practice-entity)))
 
+(defn move-item-forward
+  [practice item]
+  practice)
+
+(defn move-item-backwards
+  [practice item]
+  practice)
+
 (defn increment-stage
   [practice answered questioned]
   (when-let [practice-entity (correct? practice answered questioned)]

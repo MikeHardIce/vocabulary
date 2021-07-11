@@ -20,8 +20,16 @@
   (clear-screen)
   (gui/update! "title" :value "Practice")
   (let [translations (store/get-translations-for "german" "english")
-        practice (pract/load-exercises translations 5)]
-    (gui/create (st/->Stack "progress" (pract/show-all-stages practice) {:x 100 :y 100}))
+        practice (atom (pract/load-exercises translations 5))
+        item (pract/get-random-practice-item @practice)]
+    (gui/create (st/->Stack "progress" (pract/show-all-stages @practice) {:x 100 :y 100}))
+    (gui/label "question" (pract/get-question item) {:x 100 :y 150 :font-size 15})
+    (gui/info "answer" "" {:x 300 :y 150 :font-size 15 :focused? true})
+    (gui/update! "answer" [:events :key-pressed] (fn [wdg key-code]
+                                                     (when (= key-code :enter)
+                                                        (if (= (pract/get-answer item) (:value wdg))
+                                                          (swap! practice pract/move-item-forward item)
+                                                          (swap! practice pract/move-item-backwards item)))))
     (swap! current-items-on-screen conj "progress"))
   (create-back-button main-menu-f))
 
