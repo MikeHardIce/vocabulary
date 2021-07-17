@@ -9,6 +9,16 @@
 (defn clear-screen []
   (doall (map #(gui/remove! %) @current-items-on-screen)))
 
+(defn view-menu-main []
+  (clear-screen)
+  (gui/update! "title" :value "Vocabulary Trainer")
+  (gui/button "menu-practice" "Practice" {:x 220 :y 115 :color [:white :black] 
+                                                  :min-width 150})
+  (gui/button "menu-view" "View" {:x 220 :y 215 :color [:white :black] 
+                                                :min-width 150})
+  (gui/button "menu-add" "Add" {:x 220 :y 165 :color [:white :black] 
+                                              :min-width 150})
+
 (defn create-back-button 
   ([main-menu-f] (create-back-button main-menu-f 100 550))
   ([main-menu-f x y]
@@ -18,7 +28,7 @@
 
 (defn refresh-practice-screen
   [practice item]
-  (gui/update! "answer" :value nil)
+  (gui/update! "answer" :value "")
   (gui/update! "question" :value (pract/get-question item))
   (gui/update! "progress" :value (pract/show-all-stages practice)))
 
@@ -31,14 +41,17 @@
         item (atom (pract/get-random-practice-item @practice))]
     (gui/create (st/->Stack "progress" '(0 0) {:x 100 :y 100}))
     (gui/label "question" "" {:x 100 :y 250 :min-width 150 :font-size 15})
-    (gui/input "answer" "" {:x 300 :y 250 :min-width 200 :font-size 15 :focused? true :color [:white :black]})
+    (gui/input "answer" "" {:x 300 :y 250 :min-width 200 :font-size 15 :color [:white :black]}) ;; change to focused? once fixed in strigui
     (gui/update! "answer" [:events :key-pressed] (fn [wdg key-code]
                                                      (when (= key-code :enter)
-                                                        (if (= (pract/get-answer @item) (:value wdg))
+                                                        ;; bug in strigui, replace enter until fixed in strigui
+                                                        (if (= (pract/get-answer @item) (clojure.string/replace (:value wdg) #"\n" ""))
                                                           (swap! practice pract/move-item-forward @item)
                                                           (swap! practice pract/move-item-backwards @item))
                                                        (reset! item (pract/get-random-practice-item @practice))
-                                                       (refresh-practice-screen @practice @item))))
+                                                       (refresh-practice-screen @practice @item)
+                                                       (when (pract/finished? @practice)
+                                                         (view-menu-main)))))
     (swap! current-items-on-screen conj "progress" "question" "answer")
     (refresh-practice-screen @practice @item))
   (create-back-button main-menu-f))
@@ -67,20 +80,12 @@
     (reset! current-items-on-screen (vec (flatten (conj @current-items-on-screen voc))))
     (create-back-button main-menu-f)))
 
-(defn show-menu-main []
-  (clear-screen)
-  (gui/update! "title" :value "Vocabulary Trainer")
-  (gui/button "menu-practice" "Practice" {:x 220 :y 115 :color [:white :black] 
-                                                  :min-width 150})
-  (gui/button "menu-view" "View" {:x 220 :y 215 :color [:white :black] 
-                                                :min-width 150})
-  (gui/button "menu-add" "Add" {:x 220 :y 165 :color [:white :black] 
-                                              :min-width 150})
+
   
   (reset! current-items-on-screen ["menu-practice" "menu-add" "menu-view"])
-  (gui/update! "menu-practice" [:events :mouse-clicked] (fn [wdg] (view-practice show-menu-main)))
-  (gui/update! "menu-view" [:events :mouse-clicked] (fn [wdg] (view-vocabularies show-menu-main)))
-  (gui/update! "menu-add" [:events :mouse-clicked] (fn [wdg] (view-add-vocabularies show-menu-main))))
+  (gui/update! "menu-practice" [:events :mouse-clicked] (fn [wdg] (view-practice view-menu-main)))
+  (gui/update! "menu-view" [:events :mouse-clicked] (fn [wdg] (view-vocabularies view-menu-main)))
+  (gui/update! "menu-add" [:events :mouse-clicked] (fn [wdg] (view-add-vocabularies view-menu-main))))
 
 (defn build-main
   []
@@ -88,4 +93,4 @@
   (gui/label "title" "Vocabulary Trainer" {:x 200 :y 50 
                                             :color [:black]
                                             :font-size 20})
-  (show-menu-main))
+  (view-menu-main))

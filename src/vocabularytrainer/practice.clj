@@ -36,26 +36,26 @@
       :exercise
       :answer))
 
-(defn correct?
-  [practice answered questioned]
-  (when-let [practice-entity (filter (fn [item]
-                                       (let [q (get-question item)
-                                             answ (get-answer item)]
-                                         (and (= q questioned) (= answ answered)))) (:exercises practice))]
-    (first practice-entity)))
+(defn- update-items-stage
+  [practice item func]
+  (let [exercises (filter #(not= % item) (:exercises practice))
+        practice (assoc practice :exercises (conj exercises (update item :stage func)))]
+    practice))
 
 (defn move-item-forward
   [practice item]
-  practice)
+  (if (< (:stage item) (:max-stage practice))
+    (update-items-stage practice item inc)
+    practice))
 
 (defn move-item-backwards
   [practice item]
-  practice)
+  (if (> (:stage item) 0)
+    (update-items-stage practice item dec)
+    practice))
 
-(defn increment-stage
-  [practice answered questioned]
-  (when-let [practice-entity (correct? practice answered questioned)]
-    (let [ex (remove #(= practice-entity %) (:exercises practice))
-          elem (assoc practice-entity :stage (inc (:stage practice-entity)))
-          new-ex (conj ex elem)]
-      (vec new-ex))))
+(defn finished?
+  [practice]
+  (let [exercises (:exercises practice)
+        at-max-stage (filter #(<= (dec (:max-stage practice)) (:stage %)) exercises)]
+    (= (count at-max-stage) (count exercises))))
