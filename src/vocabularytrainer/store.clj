@@ -54,7 +54,7 @@
   ([from-lang to-lang] 
    (let [to-id (get-lang-id to-lang)
          from-id (get-lang-id from-lang)]
-     (db/query db (str "Select v1.term, v2.term from vocables v1
+     (db/query db (str "Select v1.term question, v2.term answer from vocables v1
                       inner join translations t on v1.id = t.vocable1_id
                       inner join vocables v2 on t.vocable2_id = v2.id
                       where v1.lang_id = " from-id
@@ -62,7 +62,7 @@
   ([from-lang to-lang term] ;; TODO: Add the other way around
   (let [voc-id (get-vocable-id term from-lang)
         to-id (get-lang-id to-lang)]
-    (db/query db (str "Select v1.term, v2.term from vocables v1
+    (db/query db (str "Select v1.term question, v2.term answer from vocables v1
                       inner join translations t on v1.id = t.vocable1_id
                       inner join vocables v2 on t.vocable2_id = v2.id
                       where v1.id = " voc-id

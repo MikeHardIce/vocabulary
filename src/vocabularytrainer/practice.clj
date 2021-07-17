@@ -7,7 +7,7 @@
    [[english-term0 german-term0] [english-term1 german-term1]]"
   [translations max-stage]
   (let [exercises (map (fn [terms]
-                         {:stage 0 :exercise {:question (terms 0) :answer (terms 1)}})
+                         {:stage 0 :exercise {:question (:question terms) :answer (:answer terms)}})
                        translations)]
     {:max-stage max-stage :exercises (vec exercises)}))
 

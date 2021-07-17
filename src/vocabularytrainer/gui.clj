@@ -16,21 +16,31 @@
   (gui/update! "back" [:events :mouse-clicked] (fn [_] (main-menu-f)))
   (swap! current-items-on-screen conj "back")))
 
-(defn view-practice [main-menu-f]
+(defn refresh-practice-screen
+  [practice item]
+  (gui/update! "answer" :value nil)
+  (gui/update! "question" :value (pract/get-question item))
+  (gui/update! "progress" :value (pract/show-all-stages practice)))
+
+(defn view-practice 
+  [main-menu-f]
   (clear-screen)
   (gui/update! "title" :value "Practice")
   (let [translations (store/get-translations-for "german" "english")
         practice (atom (pract/load-exercises translations 5))
-        item (pract/get-random-practice-item @practice)]
-    (gui/create (st/->Stack "progress" (pract/show-all-stages @practice) {:x 100 :y 100}))
-    (gui/label "question" (pract/get-question item) {:x 100 :y 150 :font-size 15})
-    (gui/info "answer" "" {:x 300 :y 150 :font-size 15 :focused? true})
+        item (atom (pract/get-random-practice-item @practice))]
+    (gui/create (st/->Stack "progress" '(0 0) {:x 100 :y 100}))
+    (gui/label "question" "" {:x 100 :y 250 :min-width 150 :font-size 15})
+    (gui/input "answer" "" {:x 300 :y 250 :min-width 200 :font-size 15 :focused? true :color [:white :black]})
     (gui/update! "answer" [:events :key-pressed] (fn [wdg key-code]
                                                      (when (= key-code :enter)
-                                                        (if (= (pract/get-answer item) (:value wdg))
-                                                          (swap! practice pract/move-item-forward item)
-                                                          (swap! practice pract/move-item-backwards item)))))
-    (swap! current-items-on-screen conj "progress"))
+                                                        (if (= (pract/get-answer @item) (:value wdg))
+                                                          (swap! practice pract/move-item-forward @item)
+                                                          (swap! practice pract/move-item-backwards @item))
+                                                       (reset! item (pract/get-random-practice-item @practice))
+                                                       (refresh-practice-screen @practice @item))))
+    (swap! current-items-on-screen conj "progress" "question" "answer")
+    (refresh-practice-screen @practice @item))
   (create-back-button main-menu-f))
 
 (defn view-add-vocabularies [main-menu-f]
