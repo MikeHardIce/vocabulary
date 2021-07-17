@@ -9,16 +9,6 @@
 (defn clear-screen []
   (doall (map #(gui/remove! %) @current-items-on-screen)))
 
-(defn view-menu-main []
-  (clear-screen)
-  (gui/update! "title" :value "Vocabulary Trainer")
-  (gui/button "menu-practice" "Practice" {:x 220 :y 115 :color [:white :black] 
-                                                  :min-width 150})
-  (gui/button "menu-view" "View" {:x 220 :y 215 :color [:white :black] 
-                                                :min-width 150})
-  (gui/button "menu-add" "Add" {:x 220 :y 165 :color [:white :black] 
-                                              :min-width 150})
-
 (defn create-back-button 
   ([main-menu-f] (create-back-button main-menu-f 100 550))
   ([main-menu-f x y]
@@ -51,7 +41,7 @@
                                                        (reset! item (pract/get-random-practice-item @practice))
                                                        (refresh-practice-screen @practice @item)
                                                        (when (pract/finished? @practice)
-                                                         (view-menu-main)))))
+                                                         (main-menu-f)))))
     (swap! current-items-on-screen conj "progress" "question" "answer")
     (refresh-practice-screen @practice @item))
   (create-back-button main-menu-f))
@@ -80,8 +70,16 @@
     (reset! current-items-on-screen (vec (flatten (conj @current-items-on-screen voc))))
     (create-back-button main-menu-f)))
 
+(defn view-menu-main []
+  (clear-screen)
+  (gui/update! "title" :value "Vocabulary Trainer")
+  (gui/button "menu-practice" "Practice" {:x 220 :y 115 :color [:white :black]
+                                          :min-width 150})
+  (gui/button "menu-view" "View" {:x 220 :y 215 :color [:white :black]
+                                  :min-width 150})
+  (gui/button "menu-add" "Add" {:x 220 :y 165 :color [:white :black]
+                                :min-width 150})
 
-  
   (reset! current-items-on-screen ["menu-practice" "menu-add" "menu-view"])
   (gui/update! "menu-practice" [:events :mouse-clicked] (fn [wdg] (view-practice view-menu-main)))
   (gui/update! "menu-view" [:events :mouse-clicked] (fn [wdg] (view-vocabularies view-menu-main)))
