@@ -27,22 +27,25 @@
   (clear-screen)
   (gui/update! "title" :value "Practice")
   (let [translations (store/get-translations-for "german" "english")
-        practice (atom (pract/load-exercises translations 5))
+        practice (atom (pract/load-exercises translations 6))
         item (atom (pract/get-random-practice-item @practice))]
-    (gui/create (st/->Stack "progress" '(0 0) {:x 100 :y 100}))
-    (gui/label "question" "" {:x 100 :y 250 :min-width 150 :font-size 15})
-    (gui/input "answer" "" {:x 300 :y 250 :min-width 200 :font-size 15 :color [:white :black]}) ;; change to focused? once fixed in strigui
+    (gui/label "lbl-progress" "Progression" {:x 50 :y 350 :font-size 15})
+    (gui/create (st/->Stack "progress" '(0 0) {:x 100 :y 430}))
+    (gui/label "lbl-from-lang" "German" {:x 50 :y 100 :font-size 15})
+    (gui/label "question" "" {:x 150 :y 150 :min-width 150 :font-size 20})
+    (gui/label "lbl-to-lang" "English" {:x 50 :y 200 :font-size 15})
+    (gui/input "answer" "" {:x 150 :y 250 :min-width 200 :font-size 20 :color [:white :black]}) ;; change to focused? once fixed in strigui
     (gui/update! "answer" [:events :key-pressed] (fn [wdg key-code]
-                                                     (when (= key-code :enter)
+                                                   (when (= key-code :enter)
                                                         ;; bug in strigui, replace enter until fixed in strigui
-                                                        (if (= (pract/get-answer @item) (clojure.string/replace (:value wdg) #"\n" ""))
-                                                          (swap! practice pract/move-item-forward @item)
-                                                          (swap! practice pract/move-item-backwards @item))
-                                                       (reset! item (pract/get-random-practice-item @practice))
-                                                       (refresh-practice-screen @practice @item)
-                                                       (when (pract/finished? @practice)
-                                                         (main-menu-f)))))
-    (swap! current-items-on-screen conj "progress" "question" "answer")
+                                                     (if (= (pract/get-answer @item) (clojure.string/replace (:value wdg) #"\n" ""))
+                                                       (swap! practice pract/move-item-forward @item)
+                                                       (swap! practice pract/move-item-backwards @item))
+                                                     (reset! item (pract/get-random-practice-item @practice))
+                                                     (refresh-practice-screen @practice @item)
+                                                     (when (pract/finished? @practice)
+                                                       (main-menu-f)))))
+    (swap! current-items-on-screen conj "progress" "question" "answer" "lbl-from-lang" "lbl-to-lang" "lbl-progress")
     (refresh-practice-screen @practice @item))
   (create-back-button main-menu-f))
 
