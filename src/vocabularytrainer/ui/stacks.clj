@@ -51,7 +51,4 @@
   (draw [this canvas]
     (let [[x y _ _] (wdg/coord this canvas)]
       (draw-stacks canvas (wdg/value this) x y)
-      this))
-  (redraw
-    [this canvas]
-    (wdg/draw this canvas)))
+      this)))
