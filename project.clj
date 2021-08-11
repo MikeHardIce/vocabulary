@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.3"]
                  [org.clojure/java.jdbc "0.7.12"]
                  [org.xerial/sqlite-jdbc "3.34.0"]
-                 [strigui "0.0.1-alpha9"]]
+                 [strigui "0.0.1-alpha11"]]
   :main vocabularytrainer.core
   :aot [vocabularytrainer.core]
   :target-path "target/%s"
