@@ -45,10 +45,8 @@
                         (:y (:args this))
                         (+ (* (count (:value this)) width-per-stack) 35)
                         (+ (height (:value this)) 20)])
-  (value [this] (:value this))
-  (args [this] (:args this))
-  (widget-name [this] (:name this))
+  (defaults [this] this)
   (draw [this canvas]
     (let [[x y _ _] (wdg/coord this canvas)]
-      (draw-stacks canvas (wdg/value this) x y)
+      (draw-stacks canvas (:value this) x y)
       this)))
